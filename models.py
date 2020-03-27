@@ -1,7 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, Float, Date, Table
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
-
+from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 db = SQLAlchemy()
@@ -15,6 +15,13 @@ Enrollment = Table(
     Column("participant_id", Integer, ForeignKey("participants.id")),
     Column("datetime", Integer, nullable=False)
 )
+
+# class Enrollment(db.Model):
+#     __tablename__ = "enrollments"
+#     id = Column(Integer, primary_key=True)
+#     event_id = Column(Integer,  ForeignKey("events.id"))
+#     participant_id = Column(Integer,  ForeignKey("participants.id"))
+#     datetime = Column(Integer)
 
 class Event(db.Model):
     __tablename__ = "events"
@@ -35,10 +42,14 @@ class Event(db.Model):
 
 
 class Participant(db.Model):
+    @property
+    def password(self):
+        return self._password
+
     __tablename__ = "participants"
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False)
-    password = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)
     picture = Column(String, nullable=False)
     location = Column(String, nullable=False)
     about = Column(String, nullable=False)
@@ -47,6 +58,12 @@ class Participant(db.Model):
         "Event", secondary=Enrollment, back_populates="participants"
     )
 
+    @password.setter
+    def password(self, passw):
+        self.password_hash = generate_password_hash(passw)
+
+    def password_valid(self, password):
+        return check_password_hash(self.password_hash, password)
 
 # class Enrollment(db.Model):
 #     __tablename__ = "enrollments"

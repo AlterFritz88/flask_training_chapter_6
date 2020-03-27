@@ -23,7 +23,7 @@ def locat_add():
     return "Filled"
 
 
-@app.route("/events")
+@app.route("/events_add")
 def events_add():
     def csv_reader(file_obj):
         reader = csv.reader(file_obj)

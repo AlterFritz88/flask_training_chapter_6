@@ -21,7 +21,7 @@ admin.add_view(ModelView(Event, db.session))
 #admin.add_view(ModelView(Enrollment, db.session))
 
 from views import *
-from servis_views import *
+#from servis_views import *
 
 if __name__ == "__main__":
 

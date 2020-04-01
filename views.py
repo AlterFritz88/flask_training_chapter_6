@@ -3,7 +3,7 @@ from flask import abort, flash, session, redirect, request, render_template, url
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
 from models import Location, Event, Enrollment,Participant
-from schemas import LocationSchema, EventSchema
+from schemas import LocationSchema, EventSchema, ParticipantSchema
 
 
 @app.route('/locations', methods=['GET'])
@@ -43,7 +43,20 @@ def enroll(eventid):
 
 @app.route('/register', methods=['DELETE'])
 def register():
-    return {"status": "ok", "id": 1}
+    email = request.args.get("email")
+    name = request.args.get("name")
+    location = request.args.get("location")
+    about = request.args.get("about")
+    password = request.args.get("password")
+    if email and name and location and about and password:
+        if db.session.query(Participant).filter(Participant.email == email).first():
+            return {"status": "error"}
+        user = Participant(name=name, email=email, password=password, about=about, location=location)
+        db.session.add(user)
+        db.session.commit()
+        part = ParticipantSchema()
+        return jsonify(part.dump(user))
+    return {"status":"error"}
 
 
 @app.route('/auth', methods=['POST'])
@@ -58,6 +71,10 @@ def auth():
         return {"status": "bad data"}
 
 
-@app.route('/profile', methods=['GET'])
-def profile():
-    return {"status": "success", "key": 111111}
+@app.route('/profile/<uid>', methods=['GET'])
+def profile(uid):
+    user = db.session.query(Participant).get(int(uid))
+    if not user:
+        return 500
+    part = ParticipantSchema()
+    return jsonify(part.dump(user))

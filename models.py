@@ -48,9 +48,10 @@ class Participant(db.Model):
 
     __tablename__ = "participants"
     id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     password_hash = Column(String, nullable=False)
-    picture = Column(String, nullable=False)
+    picture = Column(String)
     location = Column(String, nullable=False)
     about = Column(String, nullable=False)
 

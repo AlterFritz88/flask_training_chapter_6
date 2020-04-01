@@ -19,3 +19,13 @@ class EventSchema(Schema):
     seats = fields.Integer()
     address = fields.String()
 
+
+class ParticipantSchema(Schema):
+    id = fields.Integer()
+    email = fields.String()
+    name = fields.String()
+    picture = fields.String()
+    location = fields.String()
+    about = fields.String()
+    events = fields.Nested("EventSchema")
+
